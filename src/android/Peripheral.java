@@ -95,9 +95,9 @@ public class Peripheral extends BluetoothGattCallback {
 
         BluetoothDevice device = getDevice();
         if (Build.VERSION.SDK_INT < 23) {
-            gatt = device.connectGatt(currentActivity, autoconnect, this);
+            gatt = device.connectGatt(currentActivity, true, this);
         } else {
-            gatt = device.connectGatt(currentActivity, autoconnect, this, BluetoothDevice.TRANSPORT_LE);
+            gatt = device.connectGatt(currentActivity, true, this, BluetoothDevice.TRANSPORT_LE);
         }
 
     }
