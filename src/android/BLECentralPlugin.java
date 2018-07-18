@@ -17,6 +17,7 @@ package com.megster.cordova.ble.central;
 import android.Manifest;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothManager;
@@ -86,6 +87,7 @@ public class BLECentralPlugin extends CordovaPlugin implements BluetoothAdapter.
     private static final int REQUEST_ENABLE_BLUETOOTH = 1;
 
     BluetoothAdapter bluetoothAdapter;
+    BluetoothLeScanner bluetoothlescanner;
 
     // key is the MAC Address
     Map<String, Peripheral> peripherals = new LinkedHashMap<String, Peripheral>();
@@ -135,6 +137,7 @@ public class BLECentralPlugin extends CordovaPlugin implements BluetoothAdapter.
             }
             BluetoothManager bluetoothManager = (BluetoothManager) activity.getSystemService(Context.BLUETOOTH_SERVICE);
             bluetoothAdapter = bluetoothManager.getAdapter();
+            bluetoothlescanner = bluetoothAdapter.getBluetoothLeScanner();
         }
 
         boolean validAction = true;
@@ -588,9 +591,11 @@ public class BLECentralPlugin extends CordovaPlugin implements BluetoothAdapter.
         discoverCallback = callbackContext;
 
         if (serviceUUIDs != null && serviceUUIDs.length > 0) {
-            bluetoothAdapter.startLeScan(serviceUUIDs, this);
+             bluetoothlescanner.startScan(serviceUUIDs, this);
+            //bluetoothAdapter.startLeScan(serviceUUIDs, this);
         } else {
-            bluetoothAdapter.startLeScan(this);
+            //bluetoothAdapter.startLeScan(this);
+            bluetoothlescanner.startScan(this);
         }
 
         if (scanSeconds > 0) {
@@ -599,7 +604,7 @@ public class BLECentralPlugin extends CordovaPlugin implements BluetoothAdapter.
                 @Override
                 public void run() {
                     LOG.d(TAG, "Stopping Scan");
-                    BLECentralPlugin.this.bluetoothAdapter.stopLeScan(BLECentralPlugin.this);
+                    BLECentralPlugin.this.bluetoothlescanner.stopScan(BLECentralPlugin.this);
                 }
             }, scanSeconds * 1000);
         }
