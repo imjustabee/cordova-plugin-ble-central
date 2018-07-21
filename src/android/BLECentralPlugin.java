@@ -52,6 +52,7 @@ public class BLECentralPlugin extends CordovaPlugin implements BluetoothAdapter.
     private static final String STOP_SCAN = "stopScan";
     private static final String START_SCAN_WITH_OPTIONS = "startScanWithOptions";
     private static final String BONDED_DEVICES = "bondedDevices";
+    private static final String UNBOND_DEVICES = "pairedDevices";
     private static final String LIST = "list";
 
     private static final String CONNECT = "connect";
@@ -299,6 +300,10 @@ public class BLECentralPlugin extends CordovaPlugin implements BluetoothAdapter.
         } else if (action.equals(BONDED_DEVICES)) {
 
             getBondedDevices(callbackContext);
+            
+        else if (action.equals(UNBOND_DEVICES)) {
+
+            clearBondedDevices(callbackContext);
 
         } else {
 
@@ -325,6 +330,23 @@ public class BLECentralPlugin extends CordovaPlugin implements BluetoothAdapter.
         }
 
         callbackContext.success(bonded);
+    }
+    
+    private void clearBondedDevices(CallbackContext callbackContext) {
+     Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
+        if (pairedDevices.size() > 0) {
+            for (BluetoothDevice device : pairedDevices) {
+                try {
+                    if(device.getName().contains("Contour")){
+                    Method m = device.getClass()
+                            .getMethod("removeBond", (Class[]) null);
+                    m.invoke(device, (Object[]) null);
+                    }
+                } catch (Exception e) {
+                    Log.e("fail", e.getMessage());
+                }
+            }
+        }   
     }
 
     private UUID[] parseServiceUUIDList(JSONArray jsonArray) throws JSONException {
